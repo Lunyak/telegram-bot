@@ -23,6 +23,9 @@ const userStates = new Map();
  * БАЗОВЫЕ КОМАНДЫ
  */
 bot.start((ctx) => {
+  console.log(ctx);
+  console.log(ctx.message.chat);
+  
   ctx.reply(
     `Привет, ${ctx.from.first_name}! Я помогу тебе с напоминаниями и репетициями 🎭`
   );
@@ -40,7 +43,6 @@ bot.command("register", (ctx) => registerHandler(ctx, userStates));
 bot.command("edit", (ctx) => editHandler(ctx, userStates));
 
 bot.command("checkbirthdays", async (ctx) => {
-  console.log('asdasd');
   
   // Можно добавить проверку на админа
   if (ctx.from.id === parseInt(process.env.ADMIN_ID)) {

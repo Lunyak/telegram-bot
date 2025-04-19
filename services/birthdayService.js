@@ -73,31 +73,27 @@ class BirthdayService {
    * Проверяет наличие именинников и отправляет поздравления
    */
   async checkBirthdays() {
-    console.log("Checking for birthdays...");
+    console.log("Проверяем дни рождения...");
 
     try {
       const birthdayPeople = await findBirthdayPeople();
 
-      console.log('birthdayPeople', birthdayPeople);
-      
       if (birthdayPeople.length === 0) {
-        console.log("No birthdays today");
+        console.log("Сегодня нет именинников");
         return;
       }
 
-      console.log(`Found ${birthdayPeople.length} people with birthdays today`);
+      console.log(`Найдено ${birthdayPeople.length} именинников`);
 
       // Отправляем поздравления каждому имениннику
       for (const person of birthdayPeople) {
         await this.sendBirthdayWish(person);
       }
 
-      // Если есть групповой чат, отправляем общее уведомление туда
-      if (process.env.GROUP_CHAT_ID) {
-        await this.sendGroupNotification(birthdayPeople);
-      }
+      // Отправляем уведомление в группу
+      await this.sendGroupNotification(birthdayPeople);
     } catch (error) {
-      console.error("Error in birthday check:", error);
+      console.error("Ошибка при проверке дней рождения:", error);
     }
   }
 
@@ -107,7 +103,7 @@ class BirthdayService {
    */
   async sendBirthdayWish(user) {
     console.log(user);
-    
+
     if (!user.telegram_id) {
       console.log(`Cannot send birthday wish to ${user.name}: no Telegram ID`);
       return;
@@ -148,20 +144,29 @@ class BirthdayService {
    */
   async sendGroupNotification(birthdayPeople) {
     try {
-      // Формируем сообщение со списком именинников
+      // Проверяем, указан ли GROUP_CHAT_ID
+      if (!process.env.GROUP_CHAT_ID) {
+        console.log(
+          "GROUP_CHAT_ID не указан, пропускаем групповое уведомление"
+        );
+        return;
+      }
+
+      // Формируем список имен именинников
       const names = birthdayPeople.map((p) => p.name).join(", ");
 
+      // Создаем сообщение для группы
       let message = `🎉 <b>Сегодня день рождения празднуют:</b> ${names}! 🎂\n\n`;
-      message += "Не забудьте поздравить коллег! 🎊";
+      message += "Не забудьте поздравить! 🎊";
 
-      // Отправляем в групповой чат
+      // Отправляем сообщение в группу
       await this.bot.telegram.sendMessage(process.env.GROUP_CHAT_ID, message, {
         parse_mode: "HTML",
       });
 
-      console.log(`Sent group notification about birthdays`);
+      console.log("Групповое уведомление отправлено");
     } catch (error) {
-      console.error("Failed to send group notification:", error);
+      console.error("Ошибка при отправке группового уведомления:", error);
     }
   }
 
