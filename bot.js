@@ -14,6 +14,7 @@ const handleCallback = require("./callbacks/handleCallback");
 const removeCharacterHandler = require("./handlers/removeCharacter");
 const profileHandler = require("./handlers/profileHandler");
 const profileCallbacks = require("./callbacks/profileCallbacks");
+const BirthdayService = require("./services/birthdayService");
 
 // Хранилище состояний пользователей
 const userStates = new Map();
@@ -30,10 +31,24 @@ bot.start((ctx) => {
 /**
  * ПРОФИЛЬ И РЕГИСТРАЦИЯ
  */
+// Инициализация сервиса дней рождения
+const birthdayService = new BirthdayService(bot);
+birthdayService.init();
+
 bot.command(["profile", "me"], (ctx) => profileHandler(ctx, userStates));
 bot.command("register", (ctx) => registerHandler(ctx, userStates));
 bot.command("edit", (ctx) => editHandler(ctx, userStates));
 
+bot.command("checkbirthdays", async (ctx) => {
+  console.log('asdasd');
+  
+  // Можно добавить проверку на админа
+  if (ctx.from.id === parseInt(process.env.ADMIN_ID)) {
+    await ctx.reply("Запускаю проверку дней рождения...");
+    await birthdayService.manualCheck();
+    await ctx.reply("Проверка завершена!");
+  }
+});
 /**
  * УПРАВЛЕНИЕ РОЛЯМИ
  */
