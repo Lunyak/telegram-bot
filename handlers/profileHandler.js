@@ -43,6 +43,7 @@ module.exports = async (ctx, userStates) => {
           ...Markup.inlineKeyboard([
             [Markup.button.callback("🔄 Обновить данные", "edit_profile")],
             [Markup.button.callback("🎭 Мои роли", "my_roles")],
+            [Markup.button.callback("❌ Закрыть", "close_profile")], // Добавляем кнопку закрытия
           ]),
         });
       } catch (error) {
@@ -58,6 +59,7 @@ module.exports = async (ctx, userStates) => {
         ...Markup.inlineKeyboard([
           [Markup.button.callback("🔄 Обновить данные", "edit_profile")],
           [Markup.button.callback("🎭 Мои роли", "my_roles")],
+          [Markup.button.callback("❌ Закрыть", "close_profile")], // Добавляем кнопку закрытия
         ]),
       });
     }

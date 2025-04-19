@@ -42,6 +42,7 @@ const profileCallbacks = {
           [Markup.button.callback("➕ Добавить роль", "add_role")],
           [Markup.button.callback("🗑 Удалить роль", "remove_role")],
           [Markup.button.callback("« Назад", "back_to_profile")],
+          [Markup.button.callback("❌ Закрыть", "close_profile")], // Добавляем кнопку закрытия
         ]),
       });
 
@@ -72,6 +73,7 @@ const profileCallbacks = {
         ...Markup.inlineKeyboard([
           [Markup.button.callback("🔄 Обновить данные", "edit_profile")],
           [Markup.button.callback("🎭 Мои роли", "my_roles")],
+          [Markup.button.callback("❌ Закрыть", "close_profile")], // Добавляем кнопку закрытия
         ]),
       });
 
@@ -113,6 +115,30 @@ const profileCallbacks = {
     // Импортируем обработчик удаления роли
     const removeCharacterHandler = require("../handlers/removeCharacter");
     await removeCharacterHandler(ctx, userStates);
+  },
+
+  /**
+   * Обработчик закрытия профиля
+   */
+  async closeProfile(ctx, userStates) {
+    const userId = ctx.from.id;
+
+    try {
+      // Удаляем сообщение с профилем
+      await ctx.deleteMessage();
+
+      // Отвечаем на callback
+      await ctx.answerCbQuery("Профиль закрыт");
+
+      // Очищаем состояние, если оно связано с профилем
+      const state = userStates.get(userId);
+      if (state && state.step && state.step.includes("profile")) {
+        userStates.delete(userId);
+      }
+    } catch (error) {
+      console.error("Error closing profile:", error);
+      await ctx.answerCbQuery("Не удалось закрыть профиль");
+    }
   },
 };
 

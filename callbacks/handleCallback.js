@@ -8,8 +8,6 @@ module.exports = async function handleCallback(ctx, userStates) {
   const data = ctx.callbackQuery.data;
   const state = userStates.get(userId);
 
-  console.log(`Handling callback: ${data} for user ${userId}`);
-
   // Обработка профильных callback
   if (data === "my_roles") {
     return profileCallbacks.myRoles(ctx, userStates);
@@ -24,7 +22,6 @@ module.exports = async function handleCallback(ctx, userStates) {
     const editHandler = require("../handlers/editHandler");
     return editHandler(ctx, userStates);
   }
-}
 
   // Обработка callback для удаления ролей (пропускаем, они обрабатываются в другом месте)
   if (data.startsWith("remove_character_") || data === "cancel_remove") {

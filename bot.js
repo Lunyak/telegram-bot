@@ -2,8 +2,10 @@ require("dotenv").config();
 const { Telegraf } = require("telegraf");
 const { getUserData } = require("./utils/userApi");
 
+// Инициализация бота
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
+// Импорт обработчиков команд
 const registerHandler = require("./handlers/registerUserHandler");
 const editHandler = require("./handlers/editHandler");
 const messageHandler = require("./handlers/messageHandler");
@@ -13,24 +15,34 @@ const removeCharacterHandler = require("./handlers/removeCharacter");
 const profileHandler = require("./handlers/profileHandler");
 const profileCallbacks = require("./callbacks/profileCallbacks");
 
+// Хранилище состояний пользователей
 const userStates = new Map();
 
-// Регистрация обработчиков команд
+/**
+ * БАЗОВЫЕ КОМАНДЫ
+ */
 bot.start((ctx) => {
   ctx.reply(
     `Привет, ${ctx.from.first_name}! Я помогу тебе с напоминаниями и репетициями 🎭`
   );
 });
 
-// Добавляем обработчик команды просмотра профиля
+/**
+ * ПРОФИЛЬ И РЕГИСТРАЦИЯ
+ */
 bot.command(["profile", "me"], (ctx) => profileHandler(ctx, userStates));
-
 bot.command("register", (ctx) => registerHandler(ctx, userStates));
 bot.command("edit", (ctx) => editHandler(ctx, userStates));
-bot.command("addrole", (ctx) => hendlerCharacters(ctx, userStates));
-bot.command("addRole", (ctx) => hendlerCharacters(ctx, userStates));
 
-// Обработчик для удаления роли
+/**
+ * УПРАВЛЕНИЕ РОЛЯМИ
+ */
+// Добавление ролей
+bot.command(["addrole", "addRole"], (ctx) =>
+  hendlerCharacters(ctx, userStates)
+);
+
+// Удаление ролей
 bot.command(["removerole", "removeRole"], async (ctx) => {
   console.log("Received remove role command from:", ctx.from.id);
 
@@ -46,8 +58,6 @@ bot.command(["removerole", "removeRole"], async (ctx) => {
         "Не удалось найти данные вашего профиля. Сначала зарегистрируйтесь с помощью команды /register."
       );
     }
-
-    console.log("User data received:", user);
 
     // Сохраняем состояние пользователя
     userStates.set(ctx.from.id, {
@@ -67,13 +77,24 @@ bot.command(["removerole", "removeRole"], async (ctx) => {
   }
 });
 
-// Обработчики callback для профиля
-bot.action('my_roles', (ctx) => profileCallbacks.myRoles(ctx, userStates));
-bot.action('back_to_profile', (ctx) => profileCallbacks.backToProfile(ctx, userStates));
-bot.action('add_role', (ctx) => profileCallbacks.addRole(ctx, userStates));
-bot.action('remove_role', (ctx) => profileCallbacks.removeRole(ctx, userStates));
+/**
+ * ОБРАБОТЧИКИ CALLBACK-ЗАПРОСОВ
+ */
 
-// Специальный обработчик callback-запросов для удаления ролей
+// Обработчики callback-запросов для профиля
+bot.action("my_roles", (ctx) => profileCallbacks.myRoles(ctx, userStates));
+bot.action("back_to_profile", (ctx) =>
+  profileCallbacks.backToProfile(ctx, userStates)
+);
+bot.action("add_role", (ctx) => profileCallbacks.addRole(ctx, userStates));
+bot.action("remove_role", (ctx) =>
+  profileCallbacks.removeRole(ctx, userStates)
+);
+bot.action("close_profile", (ctx) =>
+  profileCallbacks.closeProfile(ctx, userStates)
+);
+
+// Специальные обработчики для удаления ролей
 bot.action(/^remove_character_(.+)$/, async (ctx) => {
   console.log("Handling remove_character callback");
   const userId = ctx.from.id;
@@ -83,16 +104,11 @@ bot.action(/^remove_character_(.+)$/, async (ctx) => {
     return ctx.answerCbQuery("Сессия устарела. Начните заново.");
   }
 
-  // Передаем управление обработчику удаления ролей
   await removeCharacterHandler(ctx, userStates);
 });
 
-// Обработчик для отмены удаления роли
 bot.action("cancel_remove", async (ctx) => {
   console.log("Handling cancel_remove callback");
-  const userId = ctx.from.id;
-
-  // Передаем управление обработчику удаления ролей
   await removeCharacterHandler(ctx, userStates);
 });
 
@@ -106,13 +122,17 @@ bot.on("callback_query", async (ctx) => {
     return;
   }
 
-  // Для остальных callback вызываем общий обработчик
   await handleCallback(ctx, userStates);
 });
 
+/**
+ * ОБРАБОТЧИК ТЕКСТОВЫХ СООБЩЕНИЙ
+ */
 bot.on("text", (ctx) => messageHandler(ctx, userStates));
 
-// Регистрация команд
+/**
+ * РЕГИСТРАЦИЯ КОМАНД В МЕНЮ БОТА
+ */
 try {
   bot.telegram
     .setMyCommands([
@@ -130,7 +150,9 @@ try {
   console.error("Ошибка при настройке команд:", error);
 }
 
-// Запуск бота
+/**
+ * ЗАПУСК БОТА
+ */
 bot
   .launch()
   .then(() => {
