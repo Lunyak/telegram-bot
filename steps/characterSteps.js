@@ -1,6 +1,6 @@
 const { Markup } = require("telegraf");
-const plays = require("../const/plays");
-const updateUsers = require("../api/users/updateUsers");
+const plays = require("../const/PLAYS");
+const { updateUserData } = require("../utils/userApi");
 
 module.exports = async function handleCharacterStep(
   ctx,
@@ -39,8 +39,6 @@ module.exports = async function handleCharacterStep(
         return ctx.reply("Выбери роль из списка или нажми 'Отмена'.");
       }
 
-      console.log(rolesForPlay);
-
       const currentCharacters = state.user.characters || [];
 
       // Проверка, есть ли уже такая роль
@@ -54,9 +52,7 @@ module.exports = async function handleCharacterStep(
 
       const updatedCharacters = [...currentCharacters, text];
 
-      console.log(updatedCharacters);
-
-      await updateUsers(ctx, userId, updatedCharacters);
+      await updateUserData(ctx, userId, updatedCharacters);
 
       userStates.delete(userId);
       break;

@@ -1,9 +1,11 @@
 const axios = require("axios");
-const baseUrl = require("../const/baseUrl");
+const API_BASE_URL = require("../const/API_BASE_URL");
 
 module.exports = async (ctx, userStates) => {
   try {
-    const resp = await axios.get(`${baseUrl}/users/telegram/${ctx.from.id}`);
+    const resp = await axios.get(
+      `${API_BASE_URL}/users/telegram/${ctx.from.id}`
+    );
 
     // Если пользователь найден — сообщаем и выходим
     if (resp.data) {

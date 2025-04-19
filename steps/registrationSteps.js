@@ -1,7 +1,6 @@
 // 📁 steps/registrationSteps.js
-const axios = require("axios");
 const { Markup } = require("telegraf");
-const createUser = require("../api/users/createUser");
+const { createUserData } = require("../utils/userApi");
 
 module.exports = async function handleRegistrationStep(
   ctx,
@@ -50,7 +49,7 @@ module.exports = async function handleRegistrationStep(
 
       state.role = "user";
 
-      await createUser(ctx, state, userId, userStates);
+      await createUserData(ctx, state, userId, userStates);
 
       break;
   }
