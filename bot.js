@@ -10,6 +10,8 @@ const messageHandler = require("./handlers/messageHandler");
 const hendlerCharacters = require("./handlers/charactersHendler");
 const handleCallback = require("./callbacks/handleCallback");
 const removeCharacterHandler = require("./handlers/removeCharacter");
+const profileHandler = require("./handlers/profileHandler");
+const profileCallbacks = require("./callbacks/profileCallbacks");
 
 const userStates = new Map();
 
@@ -19,6 +21,9 @@ bot.start((ctx) => {
     `Привет, ${ctx.from.first_name}! Я помогу тебе с напоминаниями и репетициями 🎭`
   );
 });
+
+// Добавляем обработчик команды просмотра профиля
+bot.command(["profile", "me"], (ctx) => profileHandler(ctx, userStates));
 
 bot.command("register", (ctx) => registerHandler(ctx, userStates));
 bot.command("edit", (ctx) => editHandler(ctx, userStates));
@@ -61,6 +66,12 @@ bot.command(["removerole", "removeRole"], async (ctx) => {
     );
   }
 });
+
+// Обработчики callback для профиля
+bot.action('my_roles', (ctx) => profileCallbacks.myRoles(ctx, userStates));
+bot.action('back_to_profile', (ctx) => profileCallbacks.backToProfile(ctx, userStates));
+bot.action('add_role', (ctx) => profileCallbacks.addRole(ctx, userStates));
+bot.action('remove_role', (ctx) => profileCallbacks.removeRole(ctx, userStates));
 
 // Специальный обработчик callback-запросов для удаления ролей
 bot.action(/^remove_character_(.+)$/, async (ctx) => {
@@ -110,6 +121,7 @@ try {
       { command: "edit", description: "Редактировать профиль" },
       { command: "addrole", description: "Добавить роль" },
       { command: "removerole", description: "Удалить роль" },
+      { command: "profile", description: "Просмотреть свой профиль" },
     ])
     .then(() => {
       console.log("Команды бота успешно установлены");
