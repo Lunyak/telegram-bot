@@ -144,10 +144,10 @@ class BirthdayService {
    */
   async sendGroupNotification(birthdayPeople) {
     try {
-      // Проверяем, указан ли GROUP_CHAT_ID
-      if (!process.env.GROUP_CHAT_ID) {
+      // Проверяем, указаны ли GROUP_CHAT_ID и ANNOUNCEMENTS_THREAD_ID
+      if (!process.env.GROUP_CHAT_ID || !process.env.ANNOUNCEMENTS_THREAD_ID) {
         console.log(
-          "GROUP_CHAT_ID не указан, пропускаем групповое уведомление"
+          "GROUP_CHAT_ID или ANNOUNCEMENTS_THREAD_ID не указаны, пропускаем групповое уведомление"
         );
         return;
       }
@@ -159,12 +159,13 @@ class BirthdayService {
       let message = `🎉 <b>Сегодня день рождения празднуют:</b> ${names}! 🎂\n\n`;
       message += "Не забудьте поздравить! 🎊";
 
-      // Отправляем сообщение в группу
+      // Отправляем сообщение в тему "Объявления"
       await this.bot.telegram.sendMessage(process.env.GROUP_CHAT_ID, message, {
         parse_mode: "HTML",
+        message_thread_id: parseInt(process.env.ANNOUNCEMENTS_THREAD_ID), // Указываем тему
       });
 
-      console.log("Групповое уведомление отправлено");
+      console.log("Групповое уведомление отправлено в тему 'Объявления'");
     } catch (error) {
       console.error("Ошибка при отправке группового уведомления:", error);
     }
