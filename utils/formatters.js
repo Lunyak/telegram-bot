@@ -4,7 +4,7 @@
  * @returns {string} - HTML-форматированное сообщение
  */
 const formatProfileMessage = (user) => {
-  const characters = user.characters || [];
+  const characters = user?.characters || [];
   const charactersList =
     characters.length > 0
       ? characters.map((char) => `• ${char}`).join("\n")

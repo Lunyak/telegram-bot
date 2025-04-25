@@ -1,5 +1,5 @@
 const { Markup } = require("telegraf");
-const { updateUserData } = require("../utils/userApi");
+const { updateUserData } = require("../../api/userApi");
 
 module.exports = async (ctx, userStates) => {
   const userId = ctx.from.id;
@@ -68,10 +68,8 @@ module.exports = async (ctx, userStates) => {
 
   // Первый запуск: отображаем роли
   const userCharacters = state.user.characters || [];
-  console.log(`[removeCharacter] User characters:`, userCharacters);
 
   if (userCharacters.length === 0) {
-    console.log(`[removeCharacter] No characters found`);
     return ctx.reply("У тебя нет ролей, которые можно удалить.");
   }
 
@@ -79,7 +77,6 @@ module.exports = async (ctx, userStates) => {
     step: "removeCharacter_select",
     user: state.user || {},
   });
-  console.log(`[removeCharacter] State updated for ${userId}`);
 
   // Создаем инлайн клавиатуру с ролями
   const inlineKeyboard = [
@@ -89,7 +86,6 @@ module.exports = async (ctx, userStates) => {
     [Markup.button.callback("Отмена", "cancel_remove")],
   ];
 
-  console.log(`[removeCharacter] Sending keyboard with options`);
   return ctx.reply(
     "Выбери роль, которую хочешь удалить:",
     Markup.inlineKeyboard(inlineKeyboard)

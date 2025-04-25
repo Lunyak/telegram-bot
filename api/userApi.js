@@ -9,7 +9,6 @@ const API_BASE_URL = require("../const/API_BASE_URL");
  */
 const updateUserData = async (telegramId, userData) => {
   try {
-    console.log(`Updating user with Telegram ID: ${telegramId}`, userData);
     const response = await axios.patch(
       `${API_BASE_URL}/users/telegram/${telegramId}`,
       userData

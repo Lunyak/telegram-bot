@@ -27,8 +27,6 @@ class BirthdayService {
     // Устанавливаем ежедневную проверку в 10:00 утра
     this.scheduleCheck();
     this.initialized = true;
-
-    console.log("Birthday service initialized");
   }
 
   /**
