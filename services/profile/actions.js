@@ -1,5 +1,5 @@
 const editProfileHandler = require("./handlers/editProfileHandler");
-const roleHendlers = require("./handlers/roleHendler");
+const roleHendlers = require("./handlers/roleHandler");
 
 module.exports = (bot, userStates) => {
   bot.action("change_profile", async (ctx) => {
@@ -20,6 +20,11 @@ module.exports = (bot, userStates) => {
   bot.action("change_profile_password", async (ctx) => {
     await editProfileHandler.setChangeState(ctx, userStates, "password");
   });
+
+    // Обработчик для кнопки "Изменить пол"
+    bot.action("change_profile_sex", async (ctx) => {
+      await editProfileHandler.setChangeState(ctx, userStates, "sex");
+    });
 
   // Обработчик для кнопки "Изменить день рождения"
   bot.action("change_profile_birthday", async (ctx) => {

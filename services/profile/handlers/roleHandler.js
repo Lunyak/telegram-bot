@@ -369,7 +369,6 @@ const roleHendlers = {
   async backToCharacters(ctx, userStates, playTitle) {
     const userId = ctx.from.id;
 
-    console.log(userStates.get(userId).selectedPlay);
 
     try {
       await ctx.answerCbQuery(`Возврат к персонажам спектакля "${playTitle}"`);

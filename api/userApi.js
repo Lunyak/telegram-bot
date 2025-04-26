@@ -49,6 +49,8 @@ const getUserData = async (userId) => {
  * @returns {Promise} - Результат запроса
  */
 const createUserData = async (userData) => {
+  console.log(userData);
+  
   try {
     const response = await axios.post(`${API_BASE_URL}/users`, userData);
     return response.data;

@@ -52,6 +52,9 @@ class BotManager {
     this.bot.command("register", (ctx) =>
       this.profile.registerUser(ctx, this.userStates)
     );
+    this.bot.command("addguestvassa", (ctx) =>
+      this.profile.initGuestCommands(ctx, this.userStates)
+    );
   }
   /**
    * Настройка команд профиля и регистрации
@@ -70,9 +73,7 @@ class BotManager {
   /**
    * Настройка обработчиков сообщений
    */
-  _setupMessageHandlers() {
-    
-  }
+  _setupMessageHandlers() {}
 
   /**
    * Регистрация команд в меню бота

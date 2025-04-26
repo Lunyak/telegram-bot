@@ -1,12 +1,13 @@
+const { addGuest } = require("../googleSheets/googleSheets");
 const {
   getUserData,
   updateUserData,
   createUserData,
 } = require("../../api/userApi");
 const actions = require("./actions");
-const mainHendlers = require("./handlers/mainHendlers");
+const mainHendlers = require("./handlers/mainHandlers");
 const massegeEvents = require("./massegeEvents");
-const roleHendlers = require("./handlers/roleHendler");
+const roleHendlers = require("./handlers/roleHandler");
 
 class UserService {
   constructor(bot, userStates) {
@@ -120,6 +121,7 @@ class UserService {
       "registerUser_surname",
       "registerUser_email",
       "registerUser_phone",
+      "registerUser_sex",
       "registerUser_birthday",
     ];
     const currentIndex = steps.indexOf(currentStep);
@@ -132,28 +134,20 @@ class UserService {
       registerUser_surname: "Введите вашу фамилию:",
       registerUser_email: "Введите ваш email:",
       registerUser_phone: "Введите ваш телефон:",
+      registerUser_sex: "Ваш пол",
       registerUser_birthday: "Введите вашу дату рождения (ДД.ММ.ГГГГ):",
     };
     return messages[step];
   }
 
   async createUser(ctx, userData) {
+    const userId = ctx.from.id;
     try {
-      // Здесь вызываем ваш метод для создания пользователя
-      // Например:
-
-      //  case "sex_male":
-      // if (text !== "Мужской" && text !== "Женский") {
-      //   return ctx.reply("Пожалуйста, выбери пол с кнопок");
-      // }
-
-      console.log(userData);
-
-      // state.role = "user";
-
-      await createUserData(ctx, state, userId, userStates);
-      // await createUserData(userData)
-      // const user = await User.create(userData);
+      await createUserData({
+        ...userData,
+        role: "user",
+        telegram_id: String(userId),
+      });
       ctx.reply("Регистрация успешно завершена!");
     } catch (error) {
       console.error("Ошибка при создании пользователя:", error);
@@ -164,6 +158,39 @@ class UserService {
   init() {
     actions(this.bot, this.userStates);
     massegeEvents(this);
+  }
+
+  // Инициализация команды /addGuest
+  initGuestCommands(ctx, userStates) {
+    const userId = ctx.from.id;
+
+    // Устанавливаем состояние для сбора данных гостя
+    userStates.set(userId, {
+      step: "addGuest_name",
+      data: {},
+    });
+
+    ctx.reply("Введите имя гостя:");
+  }
+  addGuestHendler(ctx, state, userId) {
+    const guestData = [
+      state.data.name, // Гость
+      state.data.pass, // Проходка
+      state.data.from, // От кого
+      state.data.note, // Примечание
+    ];
+
+    // Записываем данные в Google Таблицу
+    addGuest(guestData).then((success) => {
+      if (success) {
+        ctx.reply("Гость успешно добавлен в таблицу!");
+      } else {
+        ctx.reply("Произошла ошибка при добавлении гостя.");
+      }
+    });
+
+    // Очищаем состояние
+    this.userStates.delete(userId);
   }
 }
 
