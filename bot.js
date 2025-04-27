@@ -6,7 +6,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 
 // Импорт обработчиков команд
 const ProfileService = require("./services/profile/ProfileService");
-
+const GoogleSheetsService = require("./services/googleSheets/googleSheetsService");
 /**
  * Класс управления ботом
  * Структурирует управление функционалом бота
@@ -15,10 +15,10 @@ class BotManager {
   constructor(bot) {
     this.bot = bot;
     this.userStates = new Map();
+    this.commandHandlers = require("./handlers/commandHendlers");
+    this.googleSheets = new GoogleSheetsService(this.bot, this.userStates);
     this.profile = new ProfileService(this.bot, this.userStates);
     // this.birthdayService = new BirthdayService(bot);
-    this.callbackHandlers = require("./handlers/callbackHandlers");
-    this.commandHandlers = require("./handlers/commandHendlers");
   }
 
   /**
@@ -28,7 +28,6 @@ class BotManager {
     this._setupStartCommand();
     this._setupCommands();
     // this._setupRoleManagement();
-    this._setupMessageHandlers();
     this._registerBotCommands();
     this._initServices();
     this._startBot();
@@ -53,27 +52,12 @@ class BotManager {
       this.profile.registerUser(ctx, this.userStates)
     );
     this.bot.command("addguestvassa", (ctx) =>
-      this.profile.initGuestCommands(ctx, this.userStates)
+      this.googleSheets.initGuestCommands(ctx, this.userStates)
     );
+    this.bot.command("guests", async (ctx) => {
+      this.googleSheets.getList(ctx)
+    });
   }
-  /**
-   * Настройка команд профиля и регистрации
-   */
-  // _setupProfileCommands() {
-
-  //   this.bot.command("checkbirthdays", async (ctx) => {
-  //     if (ctx.from.id === parseInt(process.env.ADMIN_ID)) {
-  //       await ctx.reply("Запускаю проверку дней рождения...");
-  //       await this.birthdayService.manualCheck();
-  //       await ctx.reply("Проверка завершена!");
-  //     }
-  //   });
-  // }
-
-  /**
-   * Настройка обработчиков сообщений
-   */
-  _setupMessageHandlers() {}
 
   /**
    * Регистрация команд в меню бота
@@ -86,8 +70,13 @@ class BotManager {
    * Инициализация служб бота
    */
   _initServices() {
-    // this.birthdayService.init();
     this.profile.init();
+    this.googleSheets.init();
+    // this.birthdayService.init();
+  }
+
+  _initMassegeHendlers() {
+    // this.googleSheets.initMessageHendlers();
   }
 
   /**
