@@ -10,6 +10,10 @@ module.exports = {
             command: "addguestvassa",
             description: "Добавить зрителя на спектакль Васса Железнова",
           },
+          {
+            command: "guests",
+            description: "Показывает список гостей",
+          },
         ])
         .then(() => {
           console.log("Команды бота успешно установлены");

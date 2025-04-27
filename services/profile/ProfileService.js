@@ -8,8 +8,9 @@ const actions = require("./actions");
 const mainHendlers = require("./handlers/mainHandlers");
 const massegeEvents = require("./massegeEvents");
 const roleHendlers = require("./handlers/roleHandler");
+const messageEvents = require("./massegeEvents");
 
-class UserService {
+class ProfileService {
   constructor(bot, userStates) {
     this.bot = bot;
     this.userStates = userStates;
@@ -155,43 +156,15 @@ class UserService {
     }
   }
 
+  initMessageHendlers() {
+    const profileMiddleware = messageEvents(this);
+    this.bot.use(profileMiddleware);
+  }
+
   init() {
     actions(this.bot, this.userStates);
-    massegeEvents(this);
-  }
-
-  // Инициализация команды /addGuest
-  initGuestCommands(ctx, userStates) {
-    const userId = ctx.from.id;
-
-    // Устанавливаем состояние для сбора данных гостя
-    userStates.set(userId, {
-      step: "addGuest_name",
-      data: {},
-    });
-
-    ctx.reply("Введите имя гостя:");
-  }
-  addGuestHendler(ctx, state, userId) {
-    const guestData = [
-      state.data.name, // Гость
-      state.data.pass, // Проходка
-      state.data.from, // От кого
-      state.data.note, // Примечание
-    ];
-
-    // Записываем данные в Google Таблицу
-    addGuest(guestData).then((success) => {
-      if (success) {
-        ctx.reply("Гость успешно добавлен в таблицу!");
-      } else {
-        ctx.reply("Произошла ошибка при добавлении гостя.");
-      }
-    });
-
-    // Очищаем состояние
-    this.userStates.delete(userId);
+    this.initMessageHendlers();
   }
 }
 
-module.exports = UserService;
+module.exports = ProfileService;

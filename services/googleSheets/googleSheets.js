@@ -1,6 +1,6 @@
 const { google } = require("googleapis");
 const sheets = google.sheets("v4");
-const SERVICE_ACCOUNT_KEY = require("../../rare-responder-296712-0f68fa892908.json");
+const SERVICE_ACCOUNT_KEY = require("../googleSheets/configs/rare-responder-296712-0f68fa892908.json");
 
 // Авторизация через сервисный аккаунт
 async function authorize() {
@@ -44,4 +44,26 @@ async function addGuest(guestData) {
   }
 }
 
-module.exports = { addGuest };
+// Получение данных гостей из Google Таблицы
+async function getGuestsApi() {
+  try {
+    const auth = await authorize();
+    const sheets = google.sheets({ version: "v4", auth });
+
+    const spreadsheetId = process.env.SPREADSHEET_ID;
+    const sheetName = "Васса 08.05.25"; // Имя листа
+    const range = `${sheetName}!A:D`; // Диапазон данных
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range,
+    });
+
+    return response.data.values || []; // Возвращаем данные или пустой массив
+  } catch (error) {
+    console.error("Ошибка при получении данных:", error);
+    throw error;
+  }
+}
+
+module.exports = { addGuest, getGuestsApi };
