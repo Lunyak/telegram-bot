@@ -7,6 +7,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 // Импорт обработчиков команд
 const ProfileService = require("./services/profile/ProfileService");
 const GoogleSheetsService = require("./services/googleSheets/googleSheetsService");
+const BirthdayService = require("./services/birthdayService");
 /**
  * Класс управления ботом
  * Структурирует управление функционалом бота
@@ -18,7 +19,7 @@ class BotManager {
     this.commandHandlers = require("./handlers/commandHendlers");
     this.googleSheets = new GoogleSheetsService(this.bot, this.userStates);
     this.profile = new ProfileService(this.bot, this.userStates);
-    // this.birthdayService = new BirthdayService(bot);
+    this.birthdayService = new BirthdayService(bot);
   }
 
   /**
@@ -55,7 +56,10 @@ class BotManager {
       this.googleSheets.initGuestCommands(ctx, this.userStates)
     );
     this.bot.command("guests", async (ctx) => {
-      this.googleSheets.getList(ctx)
+      this.googleSheets.getList(ctx);
+    });
+    this.bot.command("checkbirthdays", async (ctx) => {
+      this.birthdayService.checkBirthdays(ctx);
     });
   }
 
@@ -70,13 +74,13 @@ class BotManager {
    * Инициализация служб бота
    */
   _initServices() {
-    // this.googleSheets.init();
     this.profile.init();
-    // this.birthdayService.init();
+    this.googleSheets.init();
+    this.birthdayService.init();
   }
 
   _initMassegeHendlers() {
-    // this.googleSheets.initMessageHendlers();
+    this.googleSheets.initMessageHendlers();
     this.profile.initMessageHendlers();
   }
 

@@ -11,9 +11,11 @@ const formatProfileMessage = (user) => {
       : "Нет ролей";
 
   return (
-    `<b>🎭 Ваш профиль в DOPHAMIN</b>\n\n` +
+    `<b>Ваш профиль в Дофамин</b>\n\n` +
     `<b>Имя:</b> ${user.name || "Не указано"}\n` +
+    `<b>Фамилия:</b> ${user.surname || "Не указано"}\n` +
     `<b>Пол:</b> ${user.sex || "Не указан"}\n` +
+    `<b>День рождения:</b> ${user?.birthday || "Не указан"}\n` +
     `<b>Телефон:</b> ${user.phone || "Не указан"}\n` +
     `<b>Роли:</b>\n${charactersList}\n\n` +
     `Используйте кнопки ниже для управления профилем.`

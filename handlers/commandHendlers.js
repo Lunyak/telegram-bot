@@ -14,6 +14,10 @@ module.exports = {
             command: "guests",
             description: "Показывает список гостей",
           },
+          {
+            command: "checkbirthdays",
+            description: "Проверить наличие именниников",
+          },
         ])
         .then(() => {
           console.log("Команды бота успешно установлены");

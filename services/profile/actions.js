@@ -8,7 +8,13 @@ module.exports = (bot, userStates) => {
 
   // Обработчик для кнопки "Изменить имя"
   bot.action("change_profile_name", async (ctx) => {
+    console.log("Изменение имени...");
     await editProfileHandler.setChangeState(ctx, userStates, "name");
+  });
+
+  bot.action("change_profile_surname", async (ctx) => {
+    console.log("Изменение фамилии...");
+    await editProfileHandler.setChangeState(ctx, userStates, "surname");
   });
 
   // Обработчик для кнопки "Изменить email"
@@ -21,10 +27,10 @@ module.exports = (bot, userStates) => {
     await editProfileHandler.setChangeState(ctx, userStates, "password");
   });
 
-    // Обработчик для кнопки "Изменить пол"
-    bot.action("change_profile_sex", async (ctx) => {
-      await editProfileHandler.setChangeState(ctx, userStates, "sex");
-    });
+  // Обработчик для кнопки "Изменить пол"
+  bot.action("change_profile_sex", async (ctx) => {
+    await editProfileHandler.setChangeState(ctx, userStates, "sex");
+  });
 
   // Обработчик для кнопки "Изменить день рождения"
   bot.action("change_profile_birthday", async (ctx) => {

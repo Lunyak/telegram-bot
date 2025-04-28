@@ -77,8 +77,6 @@ async function findBirthdayPeople() {
   try {
     const response = await getUsersData();
 
-    // console.log("Fetched users:", users); // Логируем всех пользователей
-
     const birthdayPeople = response.filter(
       (user) => user.birthday && isBirthdayToday(user.birthday)
     );
