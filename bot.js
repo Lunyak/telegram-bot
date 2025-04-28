@@ -70,13 +70,14 @@ class BotManager {
    * Инициализация служб бота
    */
   _initServices() {
+    // this.googleSheets.init();
     this.profile.init();
-    this.googleSheets.init();
     // this.birthdayService.init();
   }
 
   _initMassegeHendlers() {
     // this.googleSheets.initMessageHendlers();
+    this.profile.initMessageHendlers();
   }
 
   /**

@@ -75,8 +75,9 @@ class BirthdayService {
 
     try {
       const birthdayPeople = await findBirthdayPeople();
+      console.log(birthdayPeople);
 
-      if (birthdayPeople.length === 0) {
+      if (birthdayPeople?.length === 0) {
         console.log("Сегодня нет именинников");
         return;
       }
