@@ -1,7 +1,8 @@
 /**
  * Утилиты для работы с днями рождения
  */
-const { getUserData } = require("./userApi");
+
+const { getUsersData } = require("../api/userApi");
 
 /**
  * Преобразует дату в любом формате в объект Date
@@ -74,12 +75,9 @@ function calculateAge(birthDate) {
 
 async function findBirthdayPeople() {
   try {
-    const response = await fetch("http://localhost:3000/users");
-    const users = await response.json();
+    const response = await getUsersData();
 
-    console.log("Fetched users:", users); // Логируем всех пользователей
-
-    const birthdayPeople = users.filter(
+    const birthdayPeople = response.filter(
       (user) => user.birthday && isBirthdayToday(user.birthday)
     );
 

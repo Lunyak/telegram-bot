@@ -20,7 +20,6 @@ const roleHendlers = {
     const userId = ctx.from.id;
 
     try {
-      // Получаем данные пользователя
       const user = await getUserData(userId);
 
       if (!user) {
@@ -29,19 +28,12 @@ const roleHendlers = {
 
       const characters = user.characters || [];
 
-      if (characters.length === 0) {
-        await ctx.answerCbQuery("У вас нет ролей.");
-        return ctx.editMessageText(
-          "У вас пока нет ролей. Вы можете добавить роль с помощью команды /addrole.",
-          Markup.inlineKeyboard([
-            [Markup.button.callback("« Назад", "back_to_profile")],
-          ])
-        );
-      }
-
-      const rolesMessage = `<b>Ваши роли:</b>\n\n${characters
-        .map((role, index) => `${index + 1}. ${role}`)
-        .join("\n")}`;
+      const rolesMessage =
+        characters.length === 0
+          ? "У вас пока нет ролей"
+          : `<b>Ваши роли:</b>\n\n${characters
+              .map((role, index) => `${index + 1}. ${role}`)
+              .join("\n")}`;
 
       await ctx.editMessageText(rolesMessage, {
         parse_mode: "HTML",
@@ -368,7 +360,6 @@ const roleHendlers = {
    */
   async backToCharacters(ctx, userStates, playTitle) {
     const userId = ctx.from.id;
-
 
     try {
       await ctx.answerCbQuery(`Возврат к персонажам спектакля "${playTitle}"`);

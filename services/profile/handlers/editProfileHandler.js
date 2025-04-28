@@ -35,7 +35,14 @@ module.exports = {
    */
   async setChangeState(ctx, userStates, field) {
     const userId = ctx.from.id;
-    userStates.set(userId, { step: `change_profile_${field}` });
+
+    // Устанавливаем состояние для изменения поля
+    userStates.set(userId, {
+      step: `change_profile_${field}`,
+      data: {},
+    });
+
+    // Отправляем сообщение с запросом на ввод нового значения
     await ctx.reply(`Введите новое значение для ${field}:`);
   },
 };
