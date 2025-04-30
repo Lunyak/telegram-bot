@@ -8,24 +8,53 @@ class GoogleSheetsService {
     this.userStates = userStates;
   }
 
-  async getList(ctx) {
-    try {
-      // Получаем данные из таблицы
-      const guestsData = await getGuestsApi();
+  async startGetList(ctx) {
+    const userId = ctx.from.id;
 
+    // Set initial state
+    this.userStates.set(userId, {
+      step: "getlist_select_play", // Changed step name
+    });
+
+    // Send play selection keyboard
+    const keyboard = {
+      inline_keyboard: [
+        [
+          { text: "Васса Железнова", callback_data: "getlist_Васса_Железнова" },
+          {
+            text: "Куличевское заклятие",
+            callback_data: "getlist_Куличевское_заклятие",
+          },
+        ],
+      ],
+    };
+
+    await ctx.reply("Выберите спектакль:", { reply_markup: keyboard });
+  }
+
+  async getList(ctx, play) {
+    try {
+      // Determine sheet name based on selected play
+      const sheetName =
+        play === "Васса_Железнова" ? "Васса 08.05.25" : "Дураки 02.05.25";
+
+      // Get data from the sheet
+      const guestsData = await getGuestsApi(sheetName);
+
+      // Store the data in user state
       this.userStates.set("googlSheets", {
         currentPage: 0,
-        guestsData,
+        guestsData: guestsData,
       });
 
-      // Отправляем первую страницу
+      // Send first page
       await this.sendPage(ctx, 0);
     } catch (error) {
       console.log(error);
-
       ctx.reply("Ошибка при получении данных гостей.");
     }
   }
+
   async sendPage(ctx, page) {
     const pageSize = 30; // Количество записей на странице
     const state = this.userStates.get("googlSheets");
@@ -86,20 +115,38 @@ class GoogleSheetsService {
     await ctx.reply(rows, { reply_markup: keyboard, parse_mode: "HTML" });
   }
 
-  // Инициализация команды /addGuest
-  initGuestCommands(ctx, userStates) {
+  // Инициализация команды /addguest
+  initGuestCommands(ctx) {
     const userId = ctx.from.id;
 
-    // Устанавливаем состояние для сбора данных гостя
-    userStates.set(userId, {
-      step: "addGuest_name",
+    // Устанавливаем состояние для выбора спектакля
+    this.userStates.set(userId, {
+      step: "addguest_select_play", // Changed step name
       data: {},
     });
 
-    ctx.reply("Введите имя гостя:");
+    // Отправляем список спектаклей
+    const keyboard = {
+      inline_keyboard: [
+        [
+          {
+            text: "Васса Железнова",
+            callback_data: "addguest_Васса_Железнова",
+          },
+          {
+            text: "Куличевское заклятие",
+            callback_data: "addguest_Куличевское_заклятие",
+          },
+        ],
+      ],
+    };
+
+    ctx.reply("Выберите спектакль для добавления гостя:", {
+      reply_markup: keyboard,
+    });
   }
 
-  addGuestHendler(ctx, state, userId) {
+  async addGuestHendler(ctx, state, userId) {
     const guestData = [
       state.data.name, // Гость
       state.data.pass, // Проходка
@@ -107,8 +154,12 @@ class GoogleSheetsService {
       state.data.note, // Примечание
     ];
 
+    // Определяем лист в зависимости от выбранного спектакля
+    const sheetName =
+      state.play === "Васса_Железнова" ? "Васса 08.05.25" : "Дураки 02.05.25";
+
     // Записываем данные в Google Таблицу
-    addGuest(guestData).then((success) => {
+    addGuest(guestData, sheetName).then((success) => {
       if (success) {
         ctx.reply("Гость успешно добавлен в таблицу!");
       } else {

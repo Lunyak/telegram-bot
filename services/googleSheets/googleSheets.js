@@ -14,17 +14,12 @@ async function authorize() {
 }
 
 // Запись данных гостя в Google Таблицу
-async function addGuest(guestData) {
+async function addGuest(guestData, sheetName) {
   try {
     const auth = await authorize();
     const sheets = google.sheets({ version: "v4", auth });
 
-    const spreadsheetId = process.env.SPREADSHEET_ID; // Убедитесь, что это правильный ID
-
-    // Используйте правильное имя листа
-    const sheetName = "Васса 08.05.25"; // Имя листа в таблице
-
-    // Убедитесь, что диапазон указан правильно
+    const spreadsheetId = process.env.SPREADSHEET_ID;
     const range = `${sheetName}!A:D`; // Диапазон для добавления данных
 
     const response = await sheets.spreadsheets.values.append({
@@ -45,14 +40,18 @@ async function addGuest(guestData) {
 }
 
 // Получение данных гостей из Google Таблицы
-async function getGuestsApi() {
+async function getGuestsApi(sheetName = "Лист1") {
+  // Установим значение по умолчанию
   try {
+    if (!sheetName) {
+      throw new Error("Не указано имя листа (sheetName)");
+    }
+
     const auth = await authorize();
     const sheets = google.sheets({ version: "v4", auth });
 
     const spreadsheetId = process.env.SPREADSHEET_ID;
-    const sheetName = "Васса 08.05.25"; // Имя листа
-    const range = `${sheetName}!A:D`; // Диапазон данных
+    const range = `${sheetName}!A:D`; // Диапазон данных (такой же, как при добавлении)
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,

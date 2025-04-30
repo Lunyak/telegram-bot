@@ -7,8 +7,8 @@ module.exports = {
           { command: "register", description: "Зарегистрироваться" },
           { command: "profile", description: "Просмотреть свой профиль" },
           {
-            command: "addguestvassa",
-            description: "Добавить зрителя на спектакль Васса Железнова",
+            command: "addguest",
+            description: "Добавить зрителя на спектакль",
           },
           {
             command: "guests",
