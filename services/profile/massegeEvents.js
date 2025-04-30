@@ -1,5 +1,7 @@
 const messageEvents = (service) => {
-  return (ctx, next) => {
+  return async (ctx, next) => {
+    console.log(ctx.message);
+
     const userId = ctx.from.id;
     const state = service.userStates.get(userId);
 
