@@ -54,11 +54,11 @@ class BotManager {
     this.bot.command("register", (ctx) =>
       this.profile.registerUser(ctx, this.userStates)
     );
-    this.bot.command("addguestvassa", (ctx) =>
+    this.bot.command("addguest", (ctx) =>
       this.googleSheets.initGuestCommands(ctx, this.userStates)
     );
     this.bot.command("guests", async (ctx) => {
-      this.googleSheets.getList(ctx);
+      this.googleSheets.startGetList(ctx);
     });
     this.bot.command("checkbirthdays", async (ctx) => {
       this.birthdayService.checkBirthdays(ctx);
