@@ -1,4 +1,3 @@
-const { addGuest } = require("../googleSheets/googleSheets");
 const {
   getUserData,
   updateUserData,
@@ -6,7 +5,6 @@ const {
 } = require("../../api/userApi");
 const actions = require("./actions");
 const mainHendlers = require("./handlers/mainHandlers");
-const massegeEvents = require("./massegeEvents");
 const roleHendlers = require("./handlers/roleHandler");
 const messageEvents = require("./massegeEvents");
 
